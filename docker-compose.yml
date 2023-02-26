@@ -1,0 +1,52 @@
+version: '3.7'
+
+services:
+  postgresql:
+    container_name: ${DOCKER_PROJECT_NAME}_postgresql
+    image: postgres:${TEMPORAL_POSTGRES_VER}
+    environment:
+      PGPORT: ${TEMPORAL_POSTGRES_PORT}
+      PGDATABASE: ${TEMPORAL_POSTGRES_DATABASE}
+      POSTGRES_USER: ${TEMPORAL_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${TEMPORAL_POSTGRES_PASSWORD}
+    networks:
+      - z-ev
+    ports:
+      - '${TEMPORAL_POSTGRES_PORT:-5437}:${TEMPORAL_POSTGRES_PORT:-5437}'
+
+  temporal:
+    container_name: ${DOCKER_PROJECT_NAME}_temporal
+    image: temporalio/auto-setup:${TEMPORAL_VER}
+    depends_on:
+      - postgresql
+    environment:
+      - DB=${TEMPORAL_POSTGRES_DATABASE}
+      - DB_PORT=${TEMPORAL_POSTGRES_PORT}
+      - POSTGRES_USER=${TEMPORAL_POSTGRES_USER}
+      - POSTGRES_PWD=${TEMPORAL_POSTGRES_PASSWORD}
+      - POSTGRES_SEEDS=${TEMPORAL_POSTGRES_DATABASE}
+      - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development.yaml
+    volumes:
+      - ./build/dynamicconfig:/etc/temporal/config/dynamicconfig
+    networks:
+      - z-ev
+    ports:
+      - '${TEMPORAL_PORT:-7233}:${TEMPORAL_PORT:-7233}'
+
+  temporal-ui:
+    container_name: ${DOCKER_PROJECT_NAME}_ui
+    image: temporalio/ui:${TEMPORAL_UI_VER}
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=${DOCKER_PROJECT_NAME}_temporal:${TEMPORAL_PORT:-7233}
+      - TEMPORAL_UI_PORT=${TEMPORAL_UI_PORT:-8020}
+    networks:
+      - z-ev
+    ports:
+      - '${TEMPORAL_UI_PORT:-8020}:${TEMPORAL_UI_PORT:-8020}'
+
+networks:
+  z-ev:
+    name: z-ev
+    driver: bridge

@@ -1,0 +1,12 @@
+frontend.enableSchedules:
+  - value: true
+    constraints: {}
+worker.enableScheduler:
+  - value: true
+    constraints: {}
+system.advancedVisibilityWritingMode:
+  - value: "on"
+    constraints: {}
+system.enableReadVisibilityFromES:
+  - value: true
+    constraints: {}
