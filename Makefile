@@ -1,4 +1,4 @@
-CMD = docker-compose
+CMD = docker compose
 
 all: help
 

@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   postgresql:
-    container_name: ${DOCKER_PROJECT_NAME}_postgresql
+    container_name: ${TEMPORAL_POSTGRES_DATABASE}
     image: postgres:${TEMPORAL_POSTGRES_VER}
     environment:
       PGPORT: ${TEMPORAL_POSTGRES_PORT}
@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: ${TEMPORAL_POSTGRES_USER}
       POSTGRES_PASSWORD: ${TEMPORAL_POSTGRES_PASSWORD}
     networks:
-      - z-ev
+      - fml-x
     ports:
       - '${TEMPORAL_POSTGRES_PORT:-5437}:${TEMPORAL_POSTGRES_PORT:-5437}'
 
@@ -29,7 +29,7 @@ services:
     volumes:
       - ./build/dynamicconfig:/etc/temporal/config/dynamicconfig
     networks:
-      - z-ev
+      - fml-x
     ports:
       - '${TEMPORAL_PORT:-7233}:${TEMPORAL_PORT:-7233}'
 
@@ -42,11 +42,11 @@ services:
       - TEMPORAL_ADDRESS=${DOCKER_PROJECT_NAME}_temporal:${TEMPORAL_PORT:-7233}
       - TEMPORAL_UI_PORT=${TEMPORAL_UI_PORT:-8020}
     networks:
-      - z-ev
+      - fml-x
     ports:
       - '${TEMPORAL_UI_PORT:-8020}:${TEMPORAL_UI_PORT:-8020}'
 
 networks:
-  z-ev:
-    name: z-ev
+  fml-x:
+    name: fml-x
     driver: bridge
